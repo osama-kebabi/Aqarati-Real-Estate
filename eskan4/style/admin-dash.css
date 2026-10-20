@@ -1,0 +1,680 @@
+:root {
+
+
+    --font-primary: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 19px;
+    --font-size-xl: 24px;
+    --font-size-2xl: 28px; 
+
+    --transition-fast: all 0.25s ease-in-out;
+}
+
+body {
+    direction: rtl;
+    text-align: right;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-primary, sans-serif);
+}
+
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg-light, #f8f9fa);
+    color: var(--text-dark, #333);
+}
+
+.sidebar {
+    width: 300px;
+    /* background: linear-gradient(180deg, var(--color-text-muted), var(--color-white)); */
+    color: var(--text-white, #fff);
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    transition: right 0.3s ease-in-out;
+}
+
+.sidebar-header {
+    margin-top: 70px;
+}
+
+.sidebar-header h3 {
+    margin-bottom: 20px;
+    font-size: var(--font-size-2xl, 24px);
+    letter-spacing: 0.5px;
+}
+
+.sidebar-description {
+    color: rgba(255,255,255,0.8);
+    line-height: 1.7;
+    font-size: var(--font-size-sm, 14px);
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    color: var(--text-white, #fff);
+    padding: 14px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    background: rgba(255,255,255,0.06);
+    transition: var(--transition-fast, 0.2s);
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+    background: rgba(255,255,255,0.2);
+    transform: translateX(-4px);
+}
+
+.sidebar-nav a.return-site-btn {
+    background: rgba(255, 188, 6, 0.15);
+    border-right: 4px solid #ffbc06;
+    font-weight: bold;
+    color: #ffbc06;
+    margin-bottom: 15px;
+}
+
+.sidebar-nav a.return-site-btn:hover {
+    background: rgba(255, 188, 6, 0.25);
+    transform: none;
+}
+
+.sidebar-nav i {
+    width: 24px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+}
+
+.sidebar-footer a {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    transition: var(--transition-fast, 0.2s);
+}
+
+.sidebar-footer a:hover {
+    color: var(--bg-white, #fff);
+}
+
+/* ========== HAMBURGER ========== */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
+    z-index: 1001;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 10px 8px;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.hamburger:hover {
+    opacity: 90%;
+    border-color: #666666;
+}
+
+.hamburger span {
+    width: 28px;
+    height: 3px;
+    background: var(--color-gold);
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 35px;
+    min-height: 85px;
+    background: var(--bg-white, #fff);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    border-bottom: 1px solid var(--border-light, #eee);
+}
+
+.topbar h1 {
+    font-size: var(--font-size-xl, 23px);
+    color: var(--color-gold);
+    margin: 0;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.profile-chip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    border-radius: 16px;
+    background: var(--bg-light, #f8f9fa);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.profile-chip img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-gold);}
+
+.profile-text span {
+    display: block;
+    font-weight: 700;
+    font-size: var(--font-size-md);
+    color: var(--text-dark);
+}
+
+.profile-text small {
+    color: var(--text-light, #777);
+    font-size: var(--font-size-sm, 14px);
+}
+
+.logout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 15px 18px;
+    border: none;
+    border-radius: 40px;
+    background: #fff9f9;
+    color: var(--color--frontcolor);
+    cursor: pointer;
+    transition: var(--transition-fast, 0.2s);
+    font-size: medium;
+    font-weight: 700;
+}
+.logout-btn:hover {
+    color:#666666;
+    transform: scale(1.02);
+}
+.content-area {
+    flex: 1;
+    padding: 35px;
+    overflow-y: auto;
+        width: 100%;
+
+}
+#tenantPlaceholder {
+    display: none; 
+    text-align: center; 
+    padding: 50px; 
+    background: #f9f9f9; 
+    border-radius: 15px; 
+    border: 2px dashed #666666; 
+    margin-top: 20px;
+}
+.urgent-alerts { 
+    margin-bottom: 35px; 
+    width: 100%; 
+}
+
+
+.alert-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255,255,255,0.95);
+    border-right: 6px solid #666666;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.alert-card strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--color-gold);
+    font-size: var(--font-size-md, 16px);
+}
+
+.alert-card p {
+    line-height: 1.7;
+    color: var(--text-light, #777);
+}
+
+.section-panel {
+    display: none;
+}
+
+.section-panel.active {
+    display: block;
+}
+
+.grid-cards {
+    display: grid;
+    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    margin-bottom: 45px;
+}
+
+.card-panel {
+    background: var(--bg-white, #fff);
+    border-radius: 22px;
+    padding: 25px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--border-light, #eee);
+}
+
+.card-panel:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(139, 127, 210, 0.1);
+}
+
+.card-panel h2 {
+    margin: 0 0 15px 0;
+    font-size: var(--font-size-lg, 18px);
+    color: var(--color-gold);
+}
+
+.card-panel p,
+.card-panel span {
+    color: var(--text-light, #777);
+    margin: 0;
+}
+
+.pointer-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    cursor: pointer;
+}
+
+.pointer-card .stat-value {
+    font-size: var(--font-size-2xl, 24px);
+    font-weight: 800;
+    color: var(--color-gold-light);
+}
+
+.table-panel {
+    background: var(--bg-white, #fff);
+    padding: 25px;
+    border-radius: 22px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+.table-panel h3 {
+    margin: 0 0 20px 0;
+    font-size: var(--font-size-lg, 18px);
+}
+
+.table-responsive-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 15px 7px ;
+    text-align: right;
+    border-bottom: 1px solid var(--bg-light, #f8f9fa);
+    white-space: nowrap;
+}
+
+.admin-table th {
+    background: var(--bg-light, #f8f9fa);
+    color: var(--color--frontcolor);
+    font-weight: 700;
+}
+
+.admin-table tbody tr:hover {
+    background: rgba(139,127,210,0.06);
+}
+
+.admin-table td.actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-start;
+    align-items: center;
+    white-space: nowrap;
+}
+
+/* ========== أزرار الإجراءات وحظر المستخدمين ========== */
+.btn-approve, .btn-reject, .btn-view, .btn-delete, .btn-ban {
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px; /* حجم مريح وموحد للشاشات الكبيرة */
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: white;
+    transition: var(--transition-fast);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    flex-shrink: 0;
+}
+
+.btn-approve { background-color: #2ed573; color: white; }
+.btn-approve:hover { background-color: #26af5f; }
+
+.btn-reject { background-color: #ff4d4d; color: white; }
+.btn-reject:hover { background-color: #e04444; }
+
+.btn-view { background-color: var(--color--frontcolor); color: white; }
+
+.btn-ban { background-color:#ff4d4d; color: white; }
+.btn-ban:hover {filter: brightness(0.95); }
+
+.btn-delete {
+    color: #fff;
+    font-weight: 700;
+    background:#ae201d;
+    color:white;
+    gap: 6px;
+    padding: 7px 14px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+/* .btn-delete:hover { filter: brightness(0.95); } */
+
+/* ========== لون التحميل ========== */
+.fa-spinner.fa-spin,
+.fa-spinner.fa-spin.fa-2x,
+.loading i.fa-spinner {
+    color: var(--color-gold, #ffbc06) !important;
+}
+
+.btn-approve:active, .btn-reject:active, .btn-view:active, .btn-delete:active, .btn-ban:active {
+    transform: scale(0.95);
+}
+
+/* ========== شارات الحالة ========== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 1;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    margin-right: 5px;
+    min-width: max-content;
+}
+
+.status-badge.status-pending { background: #fff5e5; color: #ffa502; }
+.status-badge.status-active { background: #e5f9e5; color: #2ed573; }
+.status-badge.status-rejected { background: #ffe5e5; color: #ff4d4d; }
+
+
+/* ==========================================================================
+   ========== قسم التوافقية الاحترافي المحدث (Responsive Design) ==========
+   ========================================================================== */
+
+/* للشاشات المتوسطة والأجهزة اللوحية (Tablets) */
+@media (max-width: 1990px) {
+    .sidebar { 
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 300px;
+        height: 100vh;
+        z-index: 1000;
+        background-color: rgb(1, 66, 115);
+        box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+    }
+    
+    .sidebar.active {
+        right: 0;
+    }
+    
+    .hamburger {
+        display: flex;
+    }
+    
+    .topbar { 
+        padding: 0 20px; 
+    }
+    
+    .content-area { 
+        padding: 20px; 
+    }
+}
+
+/* للشاشات الصغيرة والهواتف المحمولة (Mobile Devices) */
+@media (max-width: 768px) {
+    .topbar {
+        padding: 10px 15px;
+        min-height: 60px;
+    }
+
+    .topbar h1 {
+        font-size: 16px;
+    }
+
+    /* إخفاء التسميات النصية غير الضرورية في الهيدر بالموبايل لعدم حدوث تزاحم */
+    .profile-text small {
+        display: none;
+    }
+    
+    .profile-chip {
+        padding: 5px 8px;
+        gap: 6px;
+    }
+    
+    .profile-chip img {
+        width: 32px;
+        height: 32px;
+    }
+
+    .logout-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    
+    .logout-btn span {
+        display: none; /* إخفاء نص "تسجيل الخروج" وترك الأيقونة فقط للحفاظ على المساحة */
+    }
+
+    .content-area {
+        padding: 15px;
+    }
+
+    .grid-cards {
+        grid-template-columns: 1fr; /* جعل الكروت العلوية تأخذ كامل العرض وتترتب عمودياً */
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .admin-table, 
+    .admin-table thead, 
+    .admin-table tbody, 
+    .admin-table th, 
+    .admin-table tr, 
+    .admin-table td { 
+        display: block; 
+    }
+    
+    .admin-table thead tr { 
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    
+    .admin-table tr { 
+        color: var(--color--frontcolor);
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 14px;
+        margin-bottom: 15px;
+        padding: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+    
+    .admin-table td { 
+        border: none;
+        border-bottom: 1px solid #f1f1f1; 
+        position: relative;
+        padding: 12px;
+        white-space: normal; /* السماح بالنصوص الطويلة بالالتفاف */
+        min-height: 35px;
+        display: block; /* يجعل كل خلية صفاً مستقلاً لسهولة العرض العمودي */
+        text-align: right;
+    }
+
+    .admin-table td:last-child {
+        border-bottom: none;
+    }
+    
+    /* اجعل تسمية العمود تظهر فوق محتوى الخلية على الموبايل */
+    .admin-table td:before {
+        position: relative;
+        display: block;
+        right: auto;
+        left: auto;
+        width: 100%;
+        margin-bottom: 6px;
+        padding: 0;
+        white-space: normal;
+        font-weight: 700;
+        color: var(--color-primary);
+        font-size: 13px;
+    }
+
+    /* جلب العناوين لجدول المستخدمين */
+    #users .admin-table td:nth-of-type(1):before { content: "رقم المستخدم:"; }
+    #users .admin-table td:nth-of-type(2):before { content: "اسم المستخدم:"; }
+    #users .admin-table td:nth-of-type(3):before { content: "البريد الإلكتروني:"; }
+    #users .admin-table td:nth-of-type(4):before { content: "رقم الهاتف:"; }
+    #users .admin-table td:nth-of-type(5):before { content: "الحالة:"; }
+    #users .admin-table td:nth-of-type(6):before { content: "الإجراءات:"; }
+
+    /* جلب العناوين لجدول العقارات */
+    #properties .admin-table td:nth-of-type(1):before { content: "العقار:"; }
+    #properties .admin-table td:nth-of-type(2):before { content: "المالك:"; }
+    #properties .admin-table td:nth-of-type(3):before { content: "السعر:"; }
+    #properties .admin-table td:nth-of-type(4):before { content: "الحالة:"; }
+    #properties .admin-table td:nth-of-type(5):before { content: "الإجراءات:"; }
+
+    /* جلب العناوين لجدول طلبات المراسلة */
+    #messages .admin-table td:nth-of-type(1):before { content: "العقار:"; }
+    #messages .admin-table td:nth-of-type(2):before { content: "مالك العقار:"; }
+    #messages .admin-table td:nth-of-type(3):before { content: "رقم المالك:"; }
+    #messages .admin-table td:nth-of-type(4):before { content: "تاريخ الطلب:"; }
+    #messages .admin-table td:nth-of-type(5):before { content: "حساب الزبون:"; }
+    #messages .admin-table td:nth-of-type(6):before { content: "رقم الزبون:"; }
+    #messages .admin-table td:nth-of-type(7):before { content: "الرسالة:"; }
+    #messages .admin-table td:nth-of-type(8):before { content: "الإجراءات:"; }
+
+    /* تنسيق أزرار العمليات داخل الكارت لتصبح مريحة للضغط وعريضة */
+    .admin-table td.actions {
+        padding-top: 12px;
+        gap: 10px;
+        flex-wrap: wrap; /* السماح للأزرار بالنزول لسطر جديد إذا كانت المساحة ضيقة جداً */
+        width: 100%;
+        min-width: auto; 
+        box-sizing: border-box;
+        justify-content: flex-start;
+    }
+
+    .admin-table td.actions button, 
+    .admin-table td.actions a {
+        flex: 1; 
+        min-width: 80px;
+        justify-content: center;
+        padding: 9px 10px;
+        font-size: 12px;
+        margin: 0 !important; 
+    }
+}
+
+/* حماية إضافية متقدمة للشاشات الصغيرة جداً أقل من 400px */
+@media (max-width: 400px) {
+    .admin-table td {
+        padding-right: 52%;
+    }
+    .admin-table td:before {
+        width: 48%;
+        font-size: 12px;
+    }
+    .admin-table td.actions button {
+        flex: 1 1 100%; 
+    }
+}
+/* --- 1. بشكل افتراضي: إخفاء بطاقات الموبايل على الشاشات الكبيرة --- */
+.mobile-cards {
+    display: none !important;
+}
+
+/* --- 2. عند تصفح الموقع من الموبايل (الشاشات الأصغر من 768 بكسل) --- */
+@media (max-width: 768px) {
+    /* عرض صندوق الجدول مع تمكين التمرير الأفقي بدلاً من الإخفاء */
+    .table-responsive-wrapper {
+        display: block !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* إخفاء بطاقات الموبايل إذا أردنا إظهار الجدول التقليدي */
+    .mobile-cards {
+        display: none !important;
+    }
+
+    /* إعادة تفعيل سلوك الجدول على الموبايل: السماح بالتمرير الأفقي بدلاً من تحويله لبطاقات */
+    .admin-table { display: table; width: 100%; min-width: 600px; table-layout: auto; }
+    .admin-table thead, .admin-table tbody, .admin-table tr, .admin-table th, .admin-table td {
+        display: table-row-group; /* reset any earlier block display */
+    }
+    .admin-table tr { display: table-row; }
+    .admin-table th, .admin-table td { display: table-cell; white-space: nowrap; }
+    .admin-table td.actions { min-width: auto; }
+}

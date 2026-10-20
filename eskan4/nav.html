@@ -1,0 +1,621 @@
+﻿<head>
+    <link rel="stylesheet" href="style/site.css">
+    <link rel="stylesheet" href="style/home-page.css">
+    <link rel="stylesheet" href="style/nav.css">
+    <link rel="stylesheet" href="style/popup.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="nav-left-group">
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="profile-chip">
+                    <img id="navAvatarLeft" src="https://ui-avatars.com/api/?name=وضع%20الزائر&background=C0C0C0&color=fff" alt="avatar">
+                    <div class="profile-text">
+                        <span id="navUserNameLeft">وضع الزائر</span>
+                        <small id="navUserRoleLeft">تسجيل الدخول</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="logo">
+               
+                <span>عقاراتي</span>
+            </div>
+
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="home.html">الرئيسية</a></li>
+                <li><a href="properties.html">العقارات</a></li>
+                <li id="myPropertiesNavItem"><a id="myPropertiesLink" href="#">عقاراتي</a></li>
+                <li><a href="home.html#services">الخدمات</a></li>
+                <li><a href="#footer" onclick="scrollToFooter(); return false;">من نحن</a></li>
+                <li><a href="#footer" onclick="scrollToFooter(); return false;">تواصل معنا</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <div class="profile-chip">
+                    <img id="navAvatarRight" src="https://ui-avatars.com/api/?name=وضع%20الزائر&background=8B7FD2&color=fff" alt="avatar">
+                    <div class="profile-text">
+                        <span id="navUserNameRight">زائر</span>
+                        <small id="navUserRoleRight">وضع الزائر</small>
+                    </div>
+                </div>
+                <button class="login-btn" id="authBtn" onclick="handleAuth()">
+                    <i class="fas fa-user"></i>
+                    <span id="authText">تسجيل الدخول</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const hamburger = document.getElementById('hamburger');
+            const navMenu   = document.getElementById('navMenu');
+
+            if (hamburger && navMenu) {
+                hamburger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    hamburger.classList.toggle('active');
+                    navMenu.classList.toggle('active');
+                });
+                navMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        hamburger.classList.remove('active');
+                        navMenu.classList.remove('active');
+                        setActiveNavItem();
+                    });
+                });
+                document.addEventListener('click', (e) => {
+                    if (!navMenu.contains(e.target) && !hamburger.contains(e.target)) {
+                        hamburger.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    }
+                });
+            }
+
+            setActiveNavItem();
+            checkAuthStatus();
+        }());
+// في ملف الـ nav
+const user = JSON.parse(localStorage.getItem('user') || 'null');
+const dashboardLink = document.getElementById('dashboardLink');
+if (dashboardLink && user) {
+    dashboardLink.href = user.role === 'admin' ? 'admin.html' : 'pending-approval.html';
+}
+        function setActiveNavItem() {
+            const currentPage = (window.location.pathname.split('/').pop() || 'home.html').toLowerCase();
+            const currentHash = (window.location.hash || '').toLowerCase();
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                const href = (link.getAttribute('href') || '').toLowerCase();
+                const isHomePage = currentPage === '' || currentPage === 'index.html' || currentPage === 'home.html';
+                if      (href === 'home.html#services' && isHomePage && currentHash === '#services') link.classList.add('active');
+                else if (href === 'home.html' && isHomePage && !currentHash)                         link.classList.add('active');
+                else if (!href.includes('#') && href === currentPage)                                link.classList.add('active');
+                else                                                                                 link.classList.remove('active');
+            });
+            
+        }
+
+        function getRoleLabel(user) {
+            if (!user) return 'وضع الزائر';
+            if (user.role === 'admin') return 'مدير النظام';
+            if (user.role === 'owner') return 'مالك عقار';
+            if (user.role === 'tenant' && user.tenant_type === 'student') return 'مستأجر - طالب';
+            if (user.role === 'tenant') return 'مستأجر';
+            return user.role || 'مستخدم';
+        }
+
+        function checkAuthStatus() {
+             if (!document.querySelector('#navbar-container')) return;
+            // نستخدم authToken كمرجع أساسي (من الـ API) وisLoggedIn كاحتياطي
+            const token      = localStorage.getItem('authToken');
+            // const isLoggedIn = token || localStorage.getItem('isLoggedIn') === 'true';
+            const isLoggedIn = !!token;
+            const authBtn    = document.getElementById('authBtn');
+              if (!authBtn) return;
+            const authText   = document.getElementById('authText');
+            const authIcon   = authBtn.querySelector('i');
+
+            // جلب بيانات المستخدم
+            const user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('userData') || 'null');
+            const userName   = user ? (user.name || '') : '';
+            const roleLabel  = getRoleLabel(user);
+
+            // استخدم النص الكامل داخل الأفاتار: نص ديناميكي مضمّن داخل صورة SVG حتى يظهر كامل الكلمة بدل الأحرف الأولى
+            const displayName = userName.trim() || 'وضع الزائر';
+
+            function avatarSvgDataUrl(text, bg = '#C0C0C0', fg = '#fff', size = 128) {
+                const svg = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns='http://www.w3.org/2000/svg' width='${size}' height='${size}' viewBox='0 0 ${size} ${size}'>` +
+                    `<rect width='100%' height='100%' rx='${size/2}' ry='${size/2}' fill='${bg}'/>` +
+                    `<text x='50%' y='50%' dy='.35em' text-anchor='middle' font-family='Cairo,Segoe UI,Arial' font-size='${Math.floor(size/5)}' fill='${fg}'>${text}</text>` +
+                    `</svg>`;
+                return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+            }
+
+            const avatarUrl = avatarSvgDataUrl(displayName, '#C0C0C0', '#fff', 128);
+            // تحديث الأفاتار والاسم في كلا الموضعين
+            ['navAvatarLeft','navAvatarRight'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.src = avatarUrl;
+            });
+            const nameLeft  = document.getElementById('navUserNameLeft');
+            const nameRight = document.getElementById('navUserNameRight');
+            const roleLeft  = document.getElementById('navUserRoleLeft');
+            const roleRight = document.getElementById('navUserRoleRight');
+
+            if (isLoggedIn && user) {
+                if (nameLeft)  nameLeft.textContent  = userName || (user.email ? user.email.split('@')[0] : 'مستخدم');
+                if (nameRight) nameRight.textContent = userName || (user.email ? user.email.split('@')[0] : 'مستخدم');
+                if (roleLeft)  roleLeft.textContent  = roleLabel;
+                if (roleRight) roleRight.textContent = roleLabel;
+            } else {
+                if (nameLeft)  nameLeft.textContent  = 'وضع الزائر';
+                if (nameRight) nameRight.textContent = 'زائر';
+                if (roleLeft)  roleLeft.textContent  = 'تسجيل الدخول';
+                if (roleRight) roleRight.textContent = 'وضع الزائر';
+            }
+
+            // زر تسجيل الدخول / الخروج
+            if (isLoggedIn) {
+                authText.textContent = ' تسجيل الخروج';
+                // authBtn.style.backgroundColor = '#ff4444';
+                authBtn.style.color = '#78979';
+                authIcon.className = 'fas fa-sign-out-alt';
+                authBtn.onclick = handleLogout;
+            } else {
+                authText.textContent = 'تسجيل الدخول';
+                authBtn.style.backgroundColor = '';
+                authBtn.style.color = '';
+                authIcon.className = 'fas fa-user';
+                authBtn.onclick = handleAuth;
+            }
+
+
+// رابط "عقاراتي / لوحة التحكم / أضف عقار"
+const myLink = document.getElementById('myPropertiesLink');
+if (myLink) {
+    const token = localStorage.getItem('authToken');
+    const user  = JSON.parse(localStorage.getItem('user') || 'null');
+
+    if (token && user) {
+        // تحديد الوجهة بناءً على الـ role
+        if (user.role === 'admin') {
+            myLink.href = 'admin.html';
+            myLink.textContent = 'لوحة الإدارة';
+        } else if (user.role === 'owner') {
+            myLink.href = 'pending-approval.html';
+            myLink.textContent = 'عقاراتي';
+        } else {
+            // 🌟 للمستأجر (tenant): تحويل الرابط إلى صفحة إضافة عقار
+            myLink.href = 'tenant-dashboard.html';
+            myLink.textContent = ' لوحتي';
+            // myLink.href = 'add-properties.html';
+        }
+        myLink.onclick = null; 
+    } else {
+        myLink.href = '#';
+        myLink.onclick = function(e) {
+            e.preventDefault();
+            localStorage.setItem('afterLoginRedirect', 'add-properties.html');
+            if (window.openLoginPopup) openLoginPopup();
+            else window.location.href = 'login-popup.html';
+        };
+    }
+}
+            
+        }
+
+        function handleAuth() {
+            if (window.openLoginPopup) openLoginPopup();
+            else window.location.href = 'login-popup.html';
+            
+        }
+        
+
+        function handleLogout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                ['authToken','user','userData','userEmail','userType','isLoggedIn'].forEach(k => localStorage.removeItem(k));
+                alert('تم تسجيل خروجك بنجاح');
+                window.location.href = 'home.html';
+            }
+        }
+
+        function scrollToFooter() {
+            const footer = document.getElementById('footer') || document.querySelector('#footer-container') || document.querySelector('.footer');
+            if (footer) { footer.scrollIntoView({ behavior: 'smooth' }); }
+            else { setTimeout(() => { const f = document.getElementById('footer') || document.querySelector('.footer'); if (f) f.scrollIntoView({ behavior: 'smooth' }); }, 100); }
+        }
+
+        window.updateAuthStatus = checkAuthStatus;
+        window.scrollToFooter   = scrollToFooter;
+        
+    </script>
+
+    <div class="login-popup-overlay" id="accountPopup" style="opacity:0;visibility:hidden;pointer-events:none;">
+        <div class="login-popup-container">
+            <button class="close-popup" type="button" id="closeAccountPopup">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="popup-right">
+                <div class="right-content">
+                    <div class="welcome-text">
+                        حسابك
+                        <span>بياناتك الشخصية</span>
+                    </div>
+                    <div class="student-message" id="accountPopupMessage">
+                        اضغط على حفظ لتحديث بيانات الحساب
+                    </div>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="accountIsStudent">
+                        <span class="custom-checkbox"></span>
+                        <span class="student-text">
+                            أنا طالب
+                            <small>فعّلها إذا كان الحساب حساب طالب</small>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="popup-left">
+                <div id="registerForm" class="form-section">
+                    <div class="login-header">
+                        <h2>تحديث الحساب</h2>
+                        <p>عدّل البيانات التالية لحسابك</p>
+                    </div>
+
+                    <form onsubmit="handleAccountSave(event)">
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" placeholder="البريد الإلكتروني" required id="registerEmail">
+                        </div>
+
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" placeholder="الاسم الكامل" required id="registerName">
+                        </div>
+
+                        <div class="input-group">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" placeholder="رقم الهاتف" required id="registerPhone">
+                        </div>
+
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" placeholder="كلمة المرور القديمة" id="registerOldPassword">
+                        </div>
+
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" placeholder="كلمة المرور الجديدة" id="registerPassword" minlength="6">
+                        </div>
+
+                        <div class="student-bottom">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="accountIsStudentMobile">
+                                <span class="custom-checkbox"></span>
+                                <span class="student-text">الرجاء اختيار خيار طالب إذا كنت كذلك</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="login-submit-btn">
+                            <i class="fas fa-save"></i>
+                            <span>حفظ التغييرات</span>
+                        </button>
+                        <div id="reError" style="display: none; margin-top: 10px;"></div>
+                    </form>
+
+                    <div class="register-link">
+                        <a href="#" onclick="closeAccountPopup(); return false;">إغلاق</a>
+                    </div>
+                </div>
+
+                <div class="login-footer">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>معلوماتك محمية وآمنة</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const accountPopup = document.getElementById('accountPopup');
+            const closeAccountPopupBtn = document.getElementById('closeAccountPopup');
+
+            function getCurrentUser() {
+                return JSON.parse(localStorage.getItem('user') || localStorage.getItem('userData') || 'null');
+            }
+
+          function setFieldValue(id, value) {
+    const popup = document.getElementById('accountPopup');
+    const element = popup
+        ? popup.querySelector('[id="' + id + '"]')
+        : document.getElementById(id);
+    if (element) element.value = value || '';
+}
+
+                        function ensureAccountPopupExists() {
+                                let accountPopupEl = document.getElementById('accountPopup');
+                                if (accountPopupEl) return accountPopupEl;
+
+                                // Create popup HTML dynamically (minimal structure compatible with popup.css)
+                                const tpl = document.createElement('div');
+                                tpl.innerHTML = `
+<div class="login-popup-overlay" id="accountPopup" style="opacity:0;visibility:hidden;pointer-events:none;">
+    <div class="login-popup-container">
+        <button class="close-popup" type="button" id="closeAccountPopup">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="popup-right">
+            <div class="right-content">
+                <div class="welcome-text">حسابك<span>بياناتك الشخصية</span></div>
+                <div class="student-message" id="accountPopupMessage">اعدّل بياناتك الشخصية</div>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="accountIsStudent">
+                    <span class="custom-checkbox"></span>
+                    <span class="student-text">أنا طالب<small>فعّلها إذا كان الحساب طالباً</small></span>
+                </label>
+            </div>
+        </div>
+        <div class="popup-left">
+            <div id="registerForm" class="form-section">
+                <div class="login-header"><h2>تحديث الحساب</h2><p>عدّل بياناتك</p></div>
+                <form onsubmit="handleAccountSave(event)">
+                    <div class="input-group"><i class="fas fa-envelope"></i><input type="email" placeholder="البريد الإلكتروني" required id="registerEmail"></div>
+                    <div class="input-group"><i class="fas fa-user"></i><input type="text" placeholder="الاسم الكامل" required id="registerName"></div>
+                    <div class="input-group"><i class="fas fa-phone"></i><input type="tel" placeholder="رقم الهاتف" required id="registerPhone"></div>
+                    <div class="input-group"><i class="fas fa-lock"></i><input type="password" placeholder="كلمة المرور القديمة" id="registerOldPassword"></div>
+                    <div class="input-group"><i class="fas fa-lock"></i><input type="password" placeholder="كلمة المرور الجديدة" id="registerPassword" minlength="6"></div>
+                    <!-- mobile student checkbox (visible on small/medium screens) -->
+                    <div class="student-bottom">
+                        <label class="checkbox-label"><input type="checkbox" id="accountIsStudentMobile"> <span class="custom-checkbox"></span> <span class="student-text">الرجاء اختيار خيار طالب إذا كنت كذلك</span></label>
+                    </div>
+                    <button type="submit" class="login-submit-btn"><i class="fas fa-save"></i><span>حفظ التغييرات</span></button>
+                    <div id="reError" style="display: none; margin-top: 10px;"></div>
+                </form>
+                <div class="register-link"><a href="#" onclick="closeAccountPopup(); return false;">إغلاق</a></div>
+            </div>
+            <div class="login-footer"><i class="fas fa-shield-alt"></i><span>معلوماتك محمية وآمنة</span></div>
+        </div>
+    </div>
+</div>`;
+
+                                // append to body
+                                document.body.appendChild(tpl.firstElementChild);
+                                accountPopupEl = document.getElementById('accountPopup');
+
+                                // wire close button and overlay click
+                                const closeBtn = document.getElementById('closeAccountPopup');
+                                if (closeBtn) closeBtn.addEventListener('click', closeAccountPopup);
+                                accountPopupEl.addEventListener('click', function (e) { if (e.target === accountPopupEl) closeAccountPopup(); });
+
+                                return accountPopupEl;
+                        }
+
+                    
+                        function openAccountPopup() {
+    const token = localStorage.getItem('authToken');
+    const currentUser = getCurrentUser();
+
+    // ✅ زائر (مش مسجل دخول) → افتحيله تسجيل الدخول بدل تعديل الحساب
+    if (!token || !currentUser) {
+        if (window.openLoginPopup) openLoginPopup();
+        else window.location.href = 'login-popup.html';
+        return;
+    }
+
+    // ✅ الأدمن ما يفتحله الـ popup
+    if (currentUser.role === 'admin') {
+        alert('المدير لا يمكنه تعديل بياناته من هنا');
+        return;
+    }
+
+    const accountPopupEl = ensureAccountPopupExists();
+    if (!accountPopupEl) {
+        console.warn('accountPopup element could not be created');
+        return;
+    }
+
+    const user = currentUser;
+
+    setFieldValue('registerEmail', user?.email || '');
+    setFieldValue('registerName',  user?.name  || '');
+    setFieldValue('registerPhone', user?.phone || '');
+    setFieldValue('registerOldPassword', '');
+    setFieldValue('registerPassword', '');
+
+    fetch('http://localhost:8000/api/auth/me', {
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        const freshUser = data.user;
+        if (!freshUser) return;
+
+        setFieldValue('registerEmail', freshUser.email || '');
+        setFieldValue('registerName',  freshUser.name  || '');
+        setFieldValue('registerPhone', freshUser.phone || '');
+
+        const studentCheck  = document.getElementById('accountIsStudent');
+        const studentMobile = document.getElementById('accountIsStudentMobile');
+        const isStudent = freshUser.tenant_type === 'student';
+        if (studentCheck)  studentCheck.checked  = isStudent;
+        if (studentMobile) studentMobile.checked = isStudent;
+
+        localStorage.setItem('user',     JSON.stringify(freshUser));
+        localStorage.setItem('userData', JSON.stringify(freshUser));
+    })
+    .catch(() => {});
+
+    const studentCheck = document.getElementById('accountIsStudent');
+    const studentMobile = document.getElementById('accountIsStudentMobile');
+    if (studentCheck) studentCheck.checked = user.tenant_type === 'student';
+    if (studentMobile) studentMobile.checked = user.tenant_type === 'student';
+
+    const accountPopupMessage = document.getElementById('accountPopupMessage');
+    if (accountPopupMessage) {
+        accountPopupMessage.textContent = 'عدّل بياناتك الشخصية وكلمة السر من هنا';
+    }
+
+    accountPopupEl.style.opacity = '1';
+    accountPopupEl.style.visibility = 'visible';
+    accountPopupEl.style.pointerEvents = 'auto';
+    document.body.style.overflow = 'hidden';
+}
+
+            function closeAccountPopup() {
+                const accountPopupEl = document.getElementById('accountPopup');
+                if (!accountPopupEl) return;
+                accountPopupEl.style.opacity = '0';
+                accountPopupEl.style.visibility = 'hidden';
+                accountPopupEl.style.pointerEvents = 'none';
+                document.body.style.overflow = 'auto';
+            }
+
+            function updateUserUI(user) {
+                const name = user?.name || (user?.email ? user.email.split('@')[0] : 'مستخدم');
+                const roleLabel = user?.role === 'admin'
+                    ? 'مدير النظام'
+                    : user?.role === 'owner'
+                        ? 'مالك عقار'
+                        : (user?.tenant_type === 'student' ? 'مستأجر - طالب' : 'مستأجر');
+
+                ['navUserNameLeft', 'navUserNameRight'].forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) element.textContent = name;
+                });
+                ['navUserRoleLeft', 'navUserRoleRight'].forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) element.textContent = roleLabel;
+                });
+
+                const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=8B7FD2&color=fff`;
+                ['navAvatarLeft', 'navAvatarRight'].forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) element.src = avatarUrl;
+                });
+            }
+
+            document.addEventListener('click', function (e) {
+                const chip = e.target.closest && e.target.closest('.profile-chip');
+                if (chip) {
+                    e.preventDefault();
+                    openAccountPopup();
+                }
+            });
+
+            closeAccountPopupBtn?.addEventListener('click', closeAccountPopup);
+            accountPopup?.addEventListener('click', function (e) {
+                if (e.target === accountPopup) closeAccountPopup();
+            });
+
+            window.openAccountPopup = openAccountPopup;
+            window.closeAccountPopup = closeAccountPopup;
+       
+      window.handleAccountSave = async function (event) {
+    event.preventDefault();
+
+    const token = localStorage.getItem('authToken');
+    const currentUser = getCurrentUser();
+
+    // ✅ نستخدم event.target (الفورم نفسه) عشان نجيب العناصر الصح
+    const form = event.target;
+    const errorBox = form.querySelector('[id="reError"]');
+
+    if (errorBox) { errorBox.style.display = 'none'; errorBox.textContent = ''; }
+
+    // ✅ جيب القيم من الفورم مباشرة بدل getElementById
+    const email       = form.querySelector('[id="registerEmail"]')?.value.trim()       || '';
+    const name        = form.querySelector('[id="registerName"]')?.value.trim()        || '';
+    const phone       = form.querySelector('[id="registerPhone"]')?.value.trim()       || '';
+    const oldPassword = form.querySelector('[id="registerOldPassword"]')?.value.trim() || '';
+    const newPassword = form.querySelector('[id="registerPassword"]')?.value.trim()    || '';
+
+    const studentDesktopEl = form.querySelector('[id="accountIsStudent"]');
+    const studentMobileEl  = form.querySelector('[id="accountIsStudentMobile"]');
+    let isStudent = false;
+    if (studentMobileEl && studentMobileEl.offsetParent !== null) isStudent = studentMobileEl.checked;
+    else if (studentDesktopEl) isStudent = studentDesktopEl.checked;
+
+    // ✅ الأدمن ما يعدل
+    if (currentUser && currentUser.role === 'admin') {
+        if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = 'المدير لا يمكنه تعديل بياناته من هنا'; }
+        return;
+    }
+
+   if (!email || !name || !phone) {
+        if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = 'الاسم والبريد ورقم الهاتف مطلوبة'; }
+        return;
+    }
+
+    if (!/^\d{10}$/.test(phone)) {                                                              // ← جديد
+        if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = 'رقم الهاتف يجب أن يتكون من 10 أرقام بالضبط'; } // ← جديد
+        return;                                                                                  // ← جديد
+    }                                                                                            // ← جديد
+
+    if (newPassword && !oldPassword) {
+        if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = 'أدخل كلمة المرور القديمة أولاً'; }
+        return;
+    }
+
+    if (newPassword && newPassword.length < 6) {
+        if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = 'كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل'; }
+        return;
+    }
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...'; }
+
+    try {
+        const body = { name, email, phone, tenant_type: isStudent ? 'student' : 'normal' };
+        if (newPassword) { body.old_password = oldPassword; body.new_password = newPassword; }
+
+        const response = await fetch('http://localhost:8000/api/auth/profile', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify(body)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            const msg = data.errors
+                ? Object.values(data.errors).flat().join(' — ')
+                : (data.message || 'فشل التحديث');
+            if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = msg; }
+            return;
+        }
+
+        const updatedUser = data.user;
+        localStorage.setItem('user',      JSON.stringify(updatedUser));
+        localStorage.setItem('userData',  JSON.stringify(updatedUser));
+        localStorage.setItem('userEmail', updatedUser.email || '');
+
+        updateUserUI(updatedUser);
+        closeAccountPopup();
+        if (typeof window.updateAuthStatus === 'function') window.updateAuthStatus();
+        alert('✅ تم تحديث بياناتك بنجاح');
+
+    } catch (e) {
+        console.error('خطأ:', e);
+        if (errorBox) { errorBox.style.display = 'block'; errorBox.textContent = 'حدث خطأ في الاتصال، حاول مجدداً'; }
+    } finally {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="fas fa-save"></i> <span>حفظ التغييرات</span>'; }
+    }
+};
+}());
+    </script>
+</body>

@@ -1,0 +1,347 @@
+<head>
+    <link rel="stylesheet" href="style/site.css">
+    <link rel="stylesheet" href="style/popup.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <!-- ========== POPUP تسجيل الدخول ========== -->
+    <div class="login-popup-overlay" id="loginPopup" style="opacity:0;visibility:hidden;pointer-events:none;">
+        <div class="login-popup-container">
+            <button class="close-popup" onclick="closeLoginPopup()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="popup-right">
+                <div class="right-content">
+                    <div class="welcome-text">
+                        مرحباً بك
+                        <span>في عقاراتي</span>
+                    </div>
+                    <div class="student-message">
+                        الرجاء اختيار خيار طالب<br>إذا كنت كذلك
+                    </div>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="studentCheck">
+                        <span class="custom-checkbox"></span>
+                        <span class="student-text">
+                            أنا طالب
+                            <small>احصل على خصم خاص للطلاب</small>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- النص الأيسر (الأبيض) -->
+            <div class="popup-left">
+                <!-- نموذج تسجيل الدخول -->
+                <div id="loginForm" class="form-section">
+                    <div class="login-header">
+                        <h2>تسجيل الدخول</h2>
+                        <p>أدخل بياناتك للوصول إلى حسابك</p>
+                    </div>
+                    
+                    <form onsubmit="handleLogin(event)">
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" placeholder="البريد الإلكتروني" required id="loginEmail">
+                        </div>
+                        
+                        <div class="password-header">
+                            <div class="input-group">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" placeholder="كلمة المرور" required id="loginPassword">
+                            </div>
+                            <a href="#" class="forgot-link" onclick="forgotPassword()">نسيت كلمة المرور؟</a>
+                        </div>
+                        
+                        <button type="submit" class="login-submit-btn">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>تسجيل الدخول</span>
+                        </button>
+                        
+                         <div id="loginError" style="display: none; margin-top: 10px;"></div>
+                    </form>
+                    
+                    <div class="register-link">
+                        ليس لديك حساب؟ <a href="#" onclick="showRegisterForm()">إنشاء حساب جديد</a>
+                    </div>
+                </div>
+
+                <!-- نموذج إنشاء الحساب -->
+                <div id="registerForm" class="form-section" style="display: none;">
+                    <div class="login-header">
+                        <h2>إنشاء حساب جديد</h2>
+                        <p>املأ البيانات التالية لإنشاء حسابك</p>
+                    </div>
+                    
+                    <form onsubmit="handleRegister(event)">
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" placeholder="البريد الإلكتروني" required id="registerEmail">
+                        </div>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" placeholder="الاسم الكامل" required id="registerName">
+                        </div>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" placeholder="رقم الهاتف (10 أرقام)" required id="registerPhone"
+                                maxlength="10" inputmode="numeric"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
+                        </div>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" placeholder="كلمة المرور" required id="registerPassword" minlength="6">
+                        </div>
+                        
+                        <button type="submit" class="login-submit-btn">
+                            <i class="fas fa-user-plus"></i>
+                            <span>إنشاء الحساب</span>
+                        </button>
+                        <div id="reError" style="display: none; margin-top: 10px;"></div>
+                    </form>
+                    
+                    <div class="register-link">
+                        لديك حساب بالفعل؟ <a href="#" onclick="showLoginForm()">تسجيل الدخول</a>
+                    </div>
+                </div>
+                
+                <div class="login-footer">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>معلوماتك محمية وآمنة</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const popup = document.getElementById('loginPopup');
+            
+            popup.addEventListener('click', function(e) {
+                if (e.target === popup) {
+                    closeLoginPopup();
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeLoginPopup();
+                }
+            });
+
+            const checkbox = document.getElementById('studentCheck');
+            const studentText = document.querySelector('.student-text');
+            
+            if (checkbox) {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        studentText.style.color = '#ffd700';
+                        setTimeout(() => {
+                            studentText.style.color = 'white';
+                        }, 300);
+                    }
+                });
+            }
+        });
+
+        function openLoginPopup() {
+            const popup = document.getElementById('loginPopup');
+            popup.classList.add('active');
+            popup.style.opacity = '1';
+            popup.style.visibility = 'visible';
+            popup.style.pointerEvents = 'auto';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLoginPopup() {
+            const popup = document.getElementById('loginPopup');
+            popup.classList.remove('active');
+            popup.style.opacity = '0';
+            popup.style.visibility = 'hidden';
+            popup.style.pointerEvents = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        async function handleLogin(event) {
+    event.preventDefault();
+
+    const email    = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
+    }
+
+    try {
+        const response = await fetch('http://localhost:8000/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'بيانات الدخول غير صحيحة');
+        }
+
+        // حفظ كل المفاتيح — لتوافق جميع الملفات
+        localStorage.setItem('authToken',  data.token);
+        localStorage.setItem('user',       JSON.stringify(data.user));
+        localStorage.setItem('userData',   JSON.stringify(data.user));
+        localStorage.setItem('userEmail',  data.user.email || '');
+        localStorage.setItem('userType',   data.user.role  || '');
+        localStorage.setItem('isLoggedIn', 'true');
+
+        if (window.updateAuthStatus) updateAuthStatus();
+
+        closeLoginPopup();
+        setTimeout(() => {
+         
+const redirect = localStorage.getItem('afterLoginRedirect');
+localStorage.removeItem('afterLoginRedirect');
+const role = data.user.role;
+
+if (role === 'admin') {
+    window.location.href = 'admin.html';
+} else if (role === 'owner') {
+    window.location.href = redirect === 'add-properties.html'
+        ? 'add-properties.html'
+        : 'pending-approval.html';
+} else if (data.user.tenant_type === 'student') {
+    window.location.href = redirect || 'properties_university.html';
+} else {
+    window.location.href = redirect || 'properties.html';
+}
+        }, 300);
+
+    } catch (error) {
+        alert(error.message || 'حدث خطأ، يرجى المحاولة مجدداً');
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> <span>تسجيل الدخول</span>';
+        }
+    }
+}
+
+        function showRegisterForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        }
+
+        function showLoginForm() {
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        }
+
+        async function handleRegister(event) {
+    event.preventDefault();
+
+    const email     = document.getElementById('registerEmail').value;
+    const name      = document.getElementById('registerName').value;
+    const phone     = document.getElementById('registerPhone').value;
+    const password  = document.getElementById('registerPassword').value;
+    const isStudent = document.getElementById('studentCheck').checked;
+
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري إنشاء الحساب...';
+    }
+
+    try {
+        const response = await fetch('http://localhost:8000/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                name,
+                email,
+                password,
+                phone,
+                role: 'tenant',
+                tenant_type: isStudent ? 'student' : 'normal'
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            const errors = data.errors
+                ? Object.values(data.errors).flat().join('\n')
+                : (data.message || 'فشل إنشاء الحساب');
+            throw new Error(errors);
+        }
+
+        // حفظ كل المفاتيح
+        localStorage.setItem('authToken',  data.token);
+        localStorage.setItem('user',       JSON.stringify(data.user));
+        localStorage.setItem('userData',   JSON.stringify(data.user));
+        localStorage.setItem('userEmail',  data.user.email || '');
+        localStorage.setItem('userType',   data.user.role  || '');
+        localStorage.setItem('isLoggedIn', 'true');
+
+        if (window.updateAuthStatus) updateAuthStatus();
+
+        alert (`أهلاً بك ${data.user.name}!\nتم إنشاء حسابك بنجاح`);
+
+        closeLoginPopup();
+
+        
+        setTimeout(() => {
+    const redirect = localStorage.getItem('afterLoginRedirect');
+    localStorage.removeItem('afterLoginRedirect');
+
+    const role = data.user.role;
+
+    // ✅ المدير والمالك دايماً لصفحتهم بغض النظر عن الـ redirect
+    if (role === 'admin') {
+        window.location.href = 'admin.html';
+    } else if (role === 'owner') {
+        window.location.href = 'pending-approval.html';
+    } else if (data.user.tenant_type === 'student') {
+        // ✅ الطالب: روّح للـ redirect إذا كان مناسب، وإلا لصفحة الطلاب
+        window.location.href = (redirect && redirect !== 'add-properties.html') 
+            ? redirect 
+            : 'properties_university.html';
+    } else {
+        // ✅ المستأجر العادي
+        window.location.href = (redirect && redirect !== 'add-properties.html') 
+            ? redirect 
+            : 'properties.html';
+    }
+}, 300);
+
+    } catch (error) {
+        alert(error.message || 'حدث خطأ، يرجى المحاولة مجدداً');
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> <span>إنشاء الحساب</span>';
+        }
+    }
+}
+
+        function goToRegister() {
+            closeLoginPopup();
+            setTimeout(() => {
+                alert('سيتم نقلك إلى صفحة إنشاء حساب جديد');
+            }, 300);
+        }
+
+        window.openLoginPopup = openLoginPopup;
+        window.closeLoginPopup = closeLoginPopup;
+    </script>
+</body>

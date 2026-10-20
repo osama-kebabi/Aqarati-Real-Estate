@@ -1,0 +1,78 @@
+<head>
+    <link rel="stylesheet" href="style/site.css">
+    <link rel="stylesheet" href="style/footer.css">
+</head>
+<body>
+<footer class="footer" id="footer">
+        <div class="footer-content">
+            <div class="footer-container">
+                <div class="footer-section">
+                    <h3 class="footer-title">عن عقاراتي</h3>
+                    <p class="footer-about">
+                        نحن منصة عقارية رائدة نساعدك في العثور على منزل أحلامك بأفضل الأسعار.
+                        نقدم خدمات متميزة وحلولاً عقارية متكاملة تناسب احتياجاتك.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">روابط سريعة</h3>
+                    <ul class="footer-links">
+                        <li><a onclick="scrollToTop()"><i class="fas fa-chevron-left"></i> الرئيسية</a></li>
+                        <li><a href="properties.html"><i class="fas fa-chevron-left"></i> العقارات</a></li>
+                        <li><a onclick="scrollToServices()"><i class="fas fa-chevron-left"></i> خدماتنا</a></li>
+                        <li><a onclick="scrollToFooter()"><i class="fas fa-chevron-left"></i> من نحن</a></li>
+                        <li><a onclick="openEmail()"><i class="fas fa-chevron-left"></i> تواصل معنا</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">معلومات الاتصال</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i><span style="color:rgba(211,162,31) important!;">سوريا - دمشق - كلية الهمك</span></li>
+                        <li class="link"><i class="fas fa-phone-alt"></i><span><a href="tel:+963969716314">+963 969 716 314</a></span></li>
+                        <li class="link"><i class="fab fa-whatsapp"></i><span><a href="https://wa.me/963969716314" >+963 969 716 314</a></span></li>
+                        <li class="link"><i class="fas fa-envelope"></i><span><a href="mailto:osamakebabi963@gmail.com">osamakebabi963@gmail.com</a></span></li>
+                        <li><i class="fas fa-clock"></i><span>الأحد - الخميس: 9:00 ص - 6:00 م</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-bottom-container">
+                <div class="copyright">© 2026 جميع الحقوق محفوظة لموقع <a href="home.html">عقاراتي</a></div>
+                <div class="made-with">صنع بـ <i class="fas fa-heart"></i> في سوريا</div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function scrollToServices() {
+            const services = document.getElementById('services');
+            if (services) services.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToFooter() {
+            const footer = document.getElementById('footer');
+            if (footer) footer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function openEmail() {
+            window.location.href = 'mailto:osamakebabi963@gmail.com';
+        }
+
+        window.scrollToTop = scrollToTop;
+        window.scrollToServices = scrollToServices;
+        window.scrollToFooter = scrollToFooter;
+        window.openEmail = openEmail;
+    </script>
+</body>
+    </script>

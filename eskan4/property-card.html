@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بطاقة العقار - عقاراتي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style/site.css">
+    <link rel="stylesheet" href="style/property-card.css">
+</head>
+<body>
+    <button class="back-button" onclick="window.close()">
+        <i class="fas fa-arrow-right"></i>
+        العودة للإضافة
+    </button>
+
+    <div class="property-card" id="propertyCard">
+        <!-- سيتم ملء البيانات تلقائياً من sessionStorage -->
+    </div>
+
+  
+    <script>
+const API_BASE = 'http://localhost:8000/api';
+
+const propertyTypes = {
+    apartment:'شقة', house:'منزل', villa:'فيلا',
+    office:'مكتب', shop:'محل تجاري', warehouse:'مستودع',
+    land:'أرض', shared:'منزل مشترك'
+};
+
+function getImageSrc(p) {
+    const images = p.images || [];
+    const main = images.find(i => i.is_main) || images[0];
+    if (!main) return null;
+    if (main.image_url) return main.image_url;
+    if (main.image_path) return `http://localhost:8000/storage/${main.image_path}`;
+    return null;
+}
+
+window.propertyImages = [];
+window.currentImageIndex = 0;
+
+function nextImage() {
+    if (!window.propertyImages.length) return;
+    window.currentImageIndex = (window.currentImageIndex + 1) % window.propertyImages.length;
+    updateImage();
+}
+
+function prevImage() {
+    if (!window.propertyImages.length) return;
+    window.currentImageIndex = (window.currentImageIndex - 1 + window.propertyImages.length) % window.propertyImages.length;
+    updateImage();
+}
+
+function updateImage() {
+    const img     = document.querySelector('.property-image img');
+    const counter = document.querySelector('.image-counter');
+    if (img) {
+        const src = window.propertyImages[window.currentImageIndex];
+        img.src = src?.image_url || `http://localhost:8000/storage/${src?.image_path}` || '';
+    }
+    if (counter) counter.textContent = `${window.currentImageIndex + 1} / ${window.propertyImages.length}`;
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+    const card = document.getElementById('propertyCard');
+
+    // ── جلب الـ id من URL ──
+    const id = new URLSearchParams(location.search).get('id');
+
+    if (!id) {
+        card.innerHTML = `<div class="loading">
+            <i class="fas fa-home" style="font-size:4rem;margin-bottom:20px;display:block;"></i>
+            <p>لا يوجد عقار محدد</p>
+        </div>`;
+        return;
+    }
+
+    card.innerHTML = `<div class="loading">
+        <i class="fas fa-spinner fa-spin" style="font-size:3rem;display:block;margin-bottom:16px;"></i>
+        <p>جاري تحميل بيانات العقار...</p>
+    </div>`;
+
+    try {
+        const token = localStorage.getItem('authToken');
+        const headers = { 'Accept': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const res = await fetch(`${API_BASE}/properties/${id}`, { headers });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const p = data.data;
+
+        // ── الصور ──
+        window.propertyImages = p.images || [];
+        const firstImg = getImageSrc(p);
+        const imgHTML = firstImg
+            ? `<img src="${firstImg}" alt="${p.title}" onerror="this.src='placeholder.svg'">`
+            : `<div class="no-images"><i class="fas fa-image"></i><p>لا توجد صور</p></div>`;
+
+        const navHTML = window.propertyImages.length > 1 ? `
+            <div class="image-nav">
+                <button onclick="prevImage()"><i class="fas fa-chevron-right"></i></button>
+                <button onclick="nextImage()"><i class="fas fa-chevron-left"></i></button>
+            </div>
+            <div class="image-counter">1 / ${window.propertyImages.length}</div>` : '';
+
+        // ── السعر مع/بدون خصم ──
+        const price = parseFloat(p.price);
+        let priceHTML;
+        if (p.has_student_discount && p.student_discount_percentage > 0) {
+            const disc = price * (1 - p.student_discount_percentage / 100);
+            priceHTML = `
+                <span style="text-decoration:line-through;color:#aaa;font-size:1.3rem;margin-left:10px;">
+                    ${price.toLocaleString('ar-SY')} ل.س
+                </span>
+                <span style="color:#27ae60;">
+                    ${disc.toLocaleString('ar-SY')} <span>ل.س</span>
+                </span>
+                <span style="font-size:.85rem;color:#ff3d6d;font-weight:700;">
+                    (خصم ${p.student_discount_percentage}%)
+                </span>`;
+        } else {
+            priceHTML = `${isNaN(price) ? 'غير محدد' : price.toLocaleString('ar-SY')} <span>ل.س</span>`;
+        }
+
+        // ── الجامعة ──
+        const uniName = p.university ? (p.university.name || p.university) : null;
+        const uniHTML = uniName ? `
+            <div class="university-badge">
+                <i class="fas fa-university"></i>
+                <span>قريب من ${uniName}</span>
+            </div>` : '';
+
+        // ── المالك ──
+        const ownerName  = p.owner?.name  || 'غير معروف';
+        const ownerPhone = p.owner?.phone || 'غير متوفر';
+
+        // ── بناء الكرت ──
+        card.innerHTML = `
+            <div class="property-image">
+                ${imgHTML}
+                <div class="property-status ${p.is_available ? '' : 'status-occupied-badge'}">
+                    ${p.is_available ? 'متاح للإيجار' : 'مشغول'}
+                </div>
+                <div class="property-type-badge">
+                    ${propertyTypes[p.property_type] || p.property_type || ''}
+                </div>
+                ${navHTML}
+            </div>
+
+            <div class="property-content">
+                <div class="property-price">${priceHTML}</div>
+                <h2 class="property-title">${p.title}</h2>
+
+                <div class="property-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${p.city}${p.region ? ' - ' + p.region : ''}</span>
+                </div>
+
+                ${uniHTML}
+
+                <div class="property-features">
+                    ${p.area ? `<div class="feature-item">
+                        <i class="fas fa-ruler-combined"></i>
+                        <span>${p.area} م²</span>
+                    </div>` : ''}
+                    <div class="feature-item">
+                        <i class="fas fa-bed"></i>
+                        <span>${p.rooms_count || '-'} غرف</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-bath"></i>
+                        <span>${p.bathrooms_count || '-'} حمام</span>
+                    </div>
+                    ${p.has_student_discount ? `<div class="feature-item">
+                        <i class="fas fa-tag"></i>
+                        <span>خصم طلابي ${p.student_discount_percentage}%</span>
+                    </div>` : ''}
+                </div>
+
+                <div class="property-description">
+                    <h4 style="color:#333;margin-bottom:10px;">وصف العقار</h4>
+                    <p>${p.description || 'لا يوجد وصف'}</p>
+                </div>
+
+                <div class="contact-section">
+                    <h4>معلومات المالك</h4>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-user"></i>
+                            <span>${ownerName}</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>${ownerPhone}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons" style="margin-top:20px;">
+                    <button class="btn-primary" onclick="requestContact(${p.id})">
+                        <i class="fas fa-envelope"></i> طلب تواصل
+                    </button>
+                </div>
+            </div>`;
+
+    } catch(e) {
+        card.innerHTML = `<div class="loading">
+            <i class="fas fa-exclamation-triangle" style="font-size:3rem;display:block;margin-bottom:16px;color:#e53935;"></i>
+            <p>فشل تحميل العقار: ${e.message}</p>
+            <button onclick="location.reload()"
+                style="margin-top:16px;padding:10px 24px;background:#667eea;
+                       color:#fff;border:none;border-radius:8px;cursor:pointer;">
+                إعادة المحاولة
+            </button>
+        </div>`;
+    }
+});
+
+async function requestContact(propertyId) {
+    const token = localStorage.getItem('authToken');
+    const user  = JSON.parse(localStorage.getItem('user') || 'null');
+
+    if (!token || !user) {
+        localStorage.setItem('afterLoginRedirect', window.location.href);
+        if (window.openLoginPopup) openLoginPopup();
+        else window.location.href = 'login-popup.html';
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/contact-requests`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                property_id: propertyId,
+                name:  user.name  || '',
+                phone: user.phone || ''
+            })
+        });
+        if (!res.ok) throw new Error((await res.json()).message || 'فشل');
+        alert('تم إرسال طلب التواصل بنجاح');
+    } catch(e) {
+        alert('فشل: ' + e.message);
+    }
+}
+</script>
+</body>
+</html>

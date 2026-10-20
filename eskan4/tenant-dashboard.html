@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حسابي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style/pending-approval.css">
+    <link rel="stylesheet" href="style/site.css">
+    <link rel="stylesheet" href="style/admin-dash.css">
+</head>
+<body>
+<div class="admin-container">
+    <aside class="sidebar">
+        <div class="sidebar-header" style="margin-top:70px;">
+            <h3>حسابي</h3>
+            <p class="sidebar-description">متابعة طلباتك وحجوزاتك.</p>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="home.html" class="return-site-btn"><i class="fas fa-arrow-right"></i> العودة للموقع</a>
+            <a href="#" class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
+            <a href="#" data-section="contactRequests"><i class="fas fa-envelope"></i> طلبات التواصل</a>
+            <a href="#" data-section="bookings"><i class="fas fa-calendar-check"></i> طلبات الحجز</a>
+            <a href="add-properties.html" style="background:var(--color-primary);color:#fff;border-radius:10px;margin-top:10px;">
+                <i class="fas fa-plus"></i> إضافة عقار
+            </a>
+        </nav>
+        <div class="sidebar-footer"><p>إسكان 2026 &copy;</p></div>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div class="topbar-right-box">
+                <div class="hamburger" id="tenantHamburger"><span></span><span></span><span></span></div>
+                <h1>حسابي</h1>
+            </div>
+            <div class="topbar-actions">
+                <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+                <div class="profile-chip">
+                    <img id="userAvatar" src="" alt="avatar">
+                    <div class="profile-text">
+                        <span id="topbarUserName">مستخدم</span>
+                        <small id="topbarUserRole">مستأجر</small>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="content-area">
+
+            <!-- لوحة التحكم الرئيسية -->
+            <section class="section-panel active" id="dashboard">
+                <div class="grid-cards">
+                    <div class="card-panel pointer-card" id="cardContacts">
+                        <div class="card-info">
+                            <h2>طلبات التواصل</h2>
+                            <p>طلبات التواصل التي أرسلتها</p>
+                        </div>
+                        <span class="stat-value" id="countContacts">0</span>
+                    </div>
+                    <div class="card-panel pointer-card" id="cardBookings">
+                        <div class="card-info">
+                            <h2>طلبات الحجز</h2>
+                            <p>طلبات الحجز التي أرسلتها</p>
+                        </div>
+                        <span class="stat-value" id="countBookings">0</span>
+                    </div>
+                    <div class="card-panel pointer-card" id="cardReplies">
+                        <div class="card-info">
+                            <h2>الردود المستلمة</h2>
+                            <p>ردود المالكين على طلباتك</p>
+                        </div>
+                        <span class="stat-value" id="countReplies">0</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم طلبات التواصل -->
+            <section class="section-panel" id="contactRequests">
+                <div class="table-panel">
+                    <div class="table-panel-header">
+                        <h3>طلبات التواصل المرسلة</h3>
+                        <p>جميع طلبات التواصل التي أرسلتها مع حالة الرد عليها</p>
+                    </div>
+                    <div class="table-responsive-wrapper">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>العقار</th>
+                                    <th>الموقع</th>
+                                    <th>رسالتك</th>
+                                    <th>تاريخ الإرسال</th>
+                                    <th>رد المالك</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contactRequestsBody">
+                                <tr><td colspan="6" style="text-align:center;padding:20px;color:#777;">جاري التحميل...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم طلبات الحجز -->
+            <section class="section-panel" id="bookings">
+                <div class="table-panel">
+                    <div class="table-panel-header">
+                        <h3>طلبات الحجز المرسلة</h3>
+                        <p>جميع طلبات الحجز التي أرسلتها مع حالتها الحالية</p>
+                    </div>
+                    <div class="table-responsive-wrapper">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>العقار</th>
+                                    <th>الموقع</th>
+                                    <th>السعر</th>
+                                    <th>الحالة</th>
+                                    <th>مدة الحجز</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookingsBody">
+                                <tr><td colspan="6" style="text-align:center;padding:20px;color:#777;">جاري التحميل...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </section>
+    </main>
+</div>
+
+<script>
+const API = 'http://localhost:8000/api';
+function getToken() { return localStorage.getItem('authToken'); }
+
+async function apiFetch(endpoint, options = {}) {
+    const token = getToken();
+    const headers = { 'Accept': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}), ...options.headers };
+    if (options.body && typeof options.body === 'object' && !(options.body instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+        options.body = JSON.stringify(options.body);
+    }
+    const res = await fetch(`${API}${endpoint}`, { method: 'GET', ...options, headers });
+    if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message || `HTTP ${res.status}`); }
+    return res.json();
+}
+
+function checkAuth() {
+    const token = getToken();
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!token || !user) { alert('يجب تسجيل الدخول أولاً'); window.location.href = 'home.html'; return null; }
+    if (user.role === 'admin') { window.location.href = 'admin.html'; return null; }
+    if (user.role === 'owner') { window.location.href = 'pending-approval.html'; return null; }
+    return user;
+}
+
+function renderProfile(user) {
+    const name = user.name || 'مستخدم';
+    const firstLetter = encodeURIComponent(name.trim().charAt(0) || 'م');
+    document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${firstLetter}&background=012A73&color=fff`;
+    document.getElementById('topbarUserName').textContent = name;
+    document.getElementById('topbarUserRole').textContent = user.tenant_type === 'student' ? 'طالب' : 'مستأجر';
+}
+
+function switchSection(sectionId) {
+    document.querySelectorAll('.sidebar-nav a[data-section]').forEach(a => {
+        a.classList.toggle('active', a.dataset.section === sectionId);
+    });
+    document.querySelectorAll('.section-panel').forEach(p => {
+        p.classList.toggle('active', p.id === sectionId);
+    });
+}
+
+async function loadContactRequests() {
+    const tbody = document.getElementById('contactRequestsBody');
+    try {
+        const data = await apiFetch('/tenant/contact-requests');
+        const list = data.data || [];
+
+        document.getElementById('countContacts').textContent = list.length;
+        const repliedCount = list.filter(r => r.reply).length;
+        document.getElementById('countReplies').textContent = repliedCount;
+
+        if (!list.length) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#777;">لم ترسل أي طلب تواصل بعد</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = '';
+        list.forEach(r => {
+            const date     = r.created_at ? new Date(r.created_at).toLocaleDateString('ar-SY') : '—';
+            const propTitle = r.property ? r.property.title : '—';
+            const propCity  = r.property ? (r.property.city || '') : '';
+            const propId    = r.property_id;
+
+            const replyHTML = r.reply
+                ? `<div style="background:#f0fff4;border:1px solid #27ae60;border-radius:8px;padding:8px;font-size:0.85rem;">
+                       <i class="fas fa-check-circle" style="color:#27ae60;"></i>
+                       <strong>رد المالك:</strong> ${r.reply}
+                       <div style="color:#999;font-size:0.75rem;margin-top:4px;">
+                           ${r.replied_at ? new Date(r.replied_at).toLocaleDateString('ar-SY') : ''}
+                       </div>
+                   </div>`
+                : `<span style="color:#e67e22;font-size:0.85rem;">
+                       <i class="fas fa-clock"></i> لم يتم الرد بعد
+                   </span>`;
+
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${propTitle}</strong></td>
+                    <td>${propCity}</td>
+                    <td style="max-width:200px;white-space:normal;">${r.message || '—'}</td>
+                    <td>${date}</td>
+                    <td>${replyHTML}</td>
+                    <td>
+                        <button onclick="viewProperty(${propId})"
+                            style="background:var(--color-primary);color:#fff;border:none;
+                                   padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.82rem;">
+                            <i class="fas fa-eye"></i> عرض العقار
+                        </button>
+                    </td>
+                </tr>`;
+        });
+    } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:#e74c3c;">خطأ: ${e.message}</td></tr>`;
+    }
+}
+
+async function loadBookings() {
+    const tbody = document.getElementById('bookingsBody');
+    try {
+        const data = await apiFetch('/tenant/bookings');
+        const list = data.data || [];
+
+        document.getElementById('countBookings').textContent = list.length;
+
+        if (!list.length) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#777;">لم ترسل أي طلب حجز بعد</td></tr>';
+            return;
+        }
+
+        const statusMap   = { pending: 'قيد الانتظار', accepted: 'مقبول', rejected: 'مرفوض' };
+        const statusClass = { pending: 'status-pending', accepted: 'status-active', rejected: 'status-rejected' };
+
+        tbody.innerHTML = '';
+        list.forEach(b => {
+            const price    = b.property ? Number(b.property.price).toLocaleString('ar-SY') + ' ل.س' : '—';
+            const city     = b.property ? (b.property.city || '') : '';
+            const title    = b.property ? b.property.title : '—';
+            const duration = b.start_date && b.end_date
+                ? `${b.start_date} → ${b.end_date}`
+                : '—';
+
+            const cancelBtn = b.status === 'pending' || b.status === 'accepted'
+                ? `<button onclick="cancelBooking(${b.id})"
+                       style="background:#e53935;color:#fff;border:none;
+                              padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.82rem;">
+                       <i class="fas fa-times"></i> إلغاء
+                   </button>`
+                : '—';
+
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${title}</strong></td>
+                    <td>${city}</td>
+                    <td>${price}</td>
+                    <td>
+                        <span class="status-badge ${statusClass[b.status] || 'status-pending'}">
+                            ${statusMap[b.status] || b.status}
+                        </span>
+                    </td>
+                    <td style="font-size:0.85rem;">${duration}</td>
+                    <td>${cancelBtn}</td>
+                </tr>`;
+        });
+    } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:#e74c3c;">خطأ: ${e.message}</td></tr>`;
+    }
+}
+
+async function cancelBooking(id) {
+    if (!confirm('هل أنت متأكد من إلغاء الحجز؟')) return;
+    try {
+        await apiFetch(`/bookings/${id}/cancel`, { method: 'PATCH' });
+        alert('✅ تم إلغاء الحجز');
+        loadBookings();
+    } catch(e) { alert('❌ ' + e.message); }
+}
+
+function viewProperty(id) {
+    window.location.href = `properties.html?id=${id}`;
+}
+
+window.cancelBooking = cancelBooking;
+window.viewProperty  = viewProperty;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const user = checkAuth();
+    if (!user) return;
+
+    renderProfile(user);
+
+    document.querySelectorAll('.sidebar-nav a[data-section]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (this.classList.contains('return-site-btn')) return;
+            e.preventDefault();
+            switchSection(this.dataset.section);
+        });
+    });
+
+    document.getElementById('cardContacts').addEventListener('click', () => switchSection('contactRequests'));
+    document.getElementById('cardBookings').addEventListener('click', () => switchSection('bookings'));
+    document.getElementById('cardReplies').addEventListener('click', () => switchSection('contactRequests'));
+
+    document.querySelector('.logout-btn').addEventListener('click', () => {
+        if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+            ['authToken','user','userData','userEmail','userType','isLoggedIn'].forEach(k => localStorage.removeItem(k));
+            window.location.href = 'home.html';
+        }
+    });
+
+    const hamburger = document.getElementById('tenantHamburger');
+    const sidebar   = document.querySelector('.sidebar');
+    if (hamburger && sidebar) {
+        hamburger.addEventListener('click', e => { e.stopPropagation(); hamburger.classList.toggle('active'); sidebar.classList.toggle('active'); });
+        document.addEventListener('click', e => { if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) { hamburger.classList.remove('active'); sidebar.classList.remove('active'); } });
+    }
+
+    loadContactRequests();
+    loadBookings();
+});
+</script>
+</body>
+</html>

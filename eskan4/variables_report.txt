@@ -1,0 +1,337 @@
+Variables and Functions Report
+
+Files included: properties.html, properties_university.html, home.html, login-popup.html, nav.html, footer.html
+
+---
+File: properties.html
+
+- sampleProperties
+  Purpose: In-memory array of property objects (id, title, city, region, property_type, rooms, price_num, price, images[], owner, status)
+  Used in: properties.html (data source for listings, filters, modals)
+
+- typeLabel(t)
+  Purpose: Helper that returns Arabic label for property types ('villa','house','shared')
+  Used in: properties.html (card and modal displays)
+
+- getQueryParams()
+  Purpose: Parses URL query string into an object
+  Used in: properties.html (initializing filters from URL)
+
+- populateLocationFilters()
+  Purpose: Builds the city/region <select> options from sampleProperties
+  Used in: properties.html (on DOMContentLoaded)
+
+- debounce(fn, wait)
+  Purpose: Utility to debounce input events
+  Used in: properties.html (q input live filtering)
+
+- renderProperties(list)
+  Purpose: Renders property cards into `#propertiesGrid` based on provided list
+  Used in: properties.html (called after filtering and initial load)
+
+- applyFilters(updateUrl = true)
+  Purpose: Reads filter inputs (q, city, region, type, rooms, min_price, max_price), filters sampleProperties, calls renderProperties, updates URL via history.replaceState
+  Used in: properties.html (filter UI, debounced input, initial load)
+
+- viewProperty(id)
+  Purpose: Find property by id and call showPropertyModal(p)
+  Used in: properties.html (card "عرض" button)
+
+- showPropertyModal(p)
+  Purpose: Builds and shows the modal overlay with image gallery, gallery nav, thumbnails, and property info (owner, rooms, status). Includes event handlers for prev/next, keyboard, touch swipe, thumbnail click, gallery click, and close.
+  Key local vars inside modal:
+    - overlay, modal, gallery, imgEl, imgs (array of image URLs), currentIndex
+    - galleryNav, prevBtn, nextBtn, closeBtn
+    - thumbs (thumbnail container), thumbEls (array of thumbnail elements), thumbHandlers (array of handlers)
+    - onPrev/onNext/onGalleryClick/onKey/onTouchStart/onTouchEnd
+  Used in: properties.html (viewProperty and contact flows)
+
+- contactOwner(id)
+  Purpose: Opens login popup if available (window.openLoginPopup), otherwise simulates contacting owner
+  Used in: properties.html (card "تواصل" button)
+
+- closePropertyModal (exposed as window.closePropertyModal)
+  Purpose: Closes modal and cleans up listeners
+  Used in: properties.html (modal close button and overlay click)
+
+DOM IDs / selectors used in file:
+- #navbar-container (injected nav)
+- #popup-container (injected login popup)
+- #footer-container (injected footer)
+- #propertiesGrid (cards render target)
+- #q, #city, #region, #type, #rooms, #min_price, #max_price (filter inputs)
+
+---
+File: properties_university.html
+
+- sampleProperties
+  Purpose: Similar to properties.html but includes student-specific fields: linkedToUniversity (boolean), studentDiscount (boolean), discountPercent (number), plus status and images.
+  Used in: properties_university.html (data source)
+
+- typeLabel(t)
+  Purpose: Same as properties.html
+  Used in: properties_university.html
+
+- getQueryParams(), populateLocationFilters(), debounce(), renderProperties(list), applyFilters(updateUrl), viewProperty(id)
+  Purpose: Same roles as in properties.html
+  Used in: properties_university.html
+
+- showPropertyModal(p)
+  Purpose: Similar modal with additional display for `linkedToUniversity`, `studentDiscount`, and `discountPercent`. Also includes thumbnail strip, prev/next, keyboard and touch handlers.
+  Local modal vars: same as properties.html (overlay, modal, gallery, imgs, currentIndex, prev/next handlers, thumbs, thumbEls, thumbHandlers, etc.)
+  Used in: properties_university.html
+
+- contactOwner(id), closePropertyModal, and other auxiliary functions: same semantics as properties.html
+
+DOM IDs / selectors used: same as properties.html (#propertiesGrid, filter inputs, navbar/popup/footer containers)
+
+---
+File: home.html
+
+- currentSlideIndex
+  Purpose: Index of current active slide in the home slider
+  Used in: home.html (slider functions)
+
+- slides, dots
+  Purpose: NodeLists of slider slides and dot indicators
+  Used in: home.html
+
+- autoSlideInterval
+  Purpose: Interval id used to auto-advance slides
+  Used in: home.html (startAutoSlide / resetAutoSlide)
+
+- showSlide(index)
+  Purpose: Activates the requested slide and corresponding dot
+  Used in: home.html (internal and exposed functions)
+
+- window.changeSlide(direction)
+  Purpose: Exposed function to change slide via buttons (prev/next) — note direction in implementation inverts sign to match RTL
+  Used in: home.html (prev/next buttons)
+
+- window.currentSlide(index)
+  Purpose: Exposed to set a specific slide via dots
+  Used in: home.html (dot click handlers)
+
+- startAutoSlide(), resetAutoSlide()
+  Purpose: Manage automatic sliding
+  Used in: home.html
+
+- window.bookProperty, window.addProperty
+  Purpose: Exposed handlers for action buttons; `bookProperty()` redirects to `properties.html`, `addProperty()` shows alert
+  Used in: home.html (action buttons)
+
+- window.scrollToServices
+  Purpose: Scroll helper used by the hero scroll indicator
+  Used in: home.html
+
+- scrollToTop button (`#scrollToTop`) logic
+  Purpose: Show/hide and scroll to top
+  Used in: home.html
+
+---
+File: login-popup.html
+
+- #loginPopup (element id)
+  Purpose: The overlay element (class login-popup-overlay) containing the popup
+  Used in: login-popup.html and injected into other pages via fetch
+
+- studentCheck (id)
+  Purpose: Checkbox input for "أنا طالب" (student). Checked state is used in handleLogin to redirect to student page
+  Used in: login-popup.html and properties pages reference window.openLoginPopup
+
+- loginEmail (#loginEmail), loginPassword (#loginPassword)
+  Purpose: Login form inputs used by handleLogin()
+  Used in: login-popup.html
+
+- openLoginPopup(), closeLoginPopup()
+  Purpose: Show/hide the login overlay and set document.body overflow; exported to window
+  Used in: login-popup.html and called from other pages (nav.html's login button, properties "تواصل" flow)
+
+- handleLogin(event)
+  Purpose: Handle login form submission, reads #loginEmail and student checkbox; simulates login then redirects to `properties_university.html` if student checked, otherwise `properties.html`.
+  Used in: login-popup.html (form onsubmit) and indirectly by other pages via openLoginPopup
+
+- forgotPassword(), goToRegister()
+  Purpose: Helper actions called by links in the popup (show alerts and close popup)
+  Used in: login-popup.html
+
+- window.openLoginPopup/window.closeLoginPopup set at end
+  Purpose: Expose popup functions globally for other pages to call
+  Used in: nav.html (login button), properties pages (contactOwner triggers openLoginPopup)
+
+---
+File: nav.html
+
+- #hamburger (id)
+  Purpose: Mobile hamburger toggle button element
+  Used in: nav.html (click handler) and injected into pages
+
+- #navMenu (id)
+  Purpose: Mobile nav menu element to show/hide
+  Used in: nav.html
+
+- showNotifications()
+  Purpose: Simple alert function for notification buttons
+  Used in: nav.html (buttons)
+
+- setActiveNavItem()
+  Purpose: Marks the current nav link as active based on the current page or hash, and also refreshes the active state when a nav item is clicked.
+  Used in: nav.html (page-load active nav highlight, click handler activation)
+
+- currentPage
+  Purpose: Local helper variable that stores the current page filename (e.g. "home.html", "properties.html") extracted from `window.location.pathname`.
+  Used in: nav.html (active link determination)
+
+- currentHash
+  Purpose: Local helper variable that stores the current fragment identifier from `window.location.hash` (e.g. `#services`).
+  Used in: nav.html (to distinguish the Services section on `home.html`)
+
+- navLinks
+  Purpose: Local helper node list of all nav anchors inside the mobile nav menu.
+  Used in: nav.html (looping through links to apply/remove the active class)
+
+- window.scrollToFooter assigned
+  Purpose: Expose scrolling helper globally
+
+---
+File: pending-approval.html
+
+- pendingProperties
+  Purpose: Array of pending property requests stored in sessionStorage; يعرض الطلبات التي تمت إضافتها في شكل جدول.
+  Used in: pending-approval.html (عرض جدول الطلبات المعلقة)
+
+- pendingProperty
+  Purpose: آخر طلب للعقار تم حفظه من صفحة إضافة العقار، يستخدم كاحتياط لتوافق العرض بعد التوجيه.
+  Used in: pending-approval.html (المزامنة مع pendingProperties)
+
+- openDetailModal(property)
+  Purpose: يعرض نافذة منبثقة تحوي تفاصيل العقار عند الضغط على زر العرض في جدول الطلبات.
+  Used in: pending-approval.html (أزرار تفاصيل الطلبات)
+
+- closeDetailModal()
+  Purpose: يغلق نافذة التفاصيل المنبثقة.
+  Used in: pending-approval.html (زر الإغلاق في المودال)
+
+- pendingList
+  Purpose: متغير محلي يحمل مصفوفة الطلبات المعلقة من sessionStorage.
+  Used in: pending-approval.html (بناء جدول الطلبات)
+
+---
+File: footer.html
+
+- scrollToTop(), scrollToServices(), scrollToFooter(), openEmail()
+  Purpose: Scrolling helpers and open mailto link; exposed on window for callers
+  Used in: footer.html (footer links) and referenced by other pages via DOM injection
+
+---
+Notes & Usage Patterns
+- Many pages perform injection of `nav.html`, `login-popup.html`, and `footer.html` using fetch + DOMParser. After injection, scripts in those files are executed by recreating <script> elements.
+- Global functions intentionally exposed on `window`: `openLoginPopup`, `closeLoginPopup`, `scrollToFooter`, `scrollToTop`, `scrollToServices`, `openEmail`, `bookProperty`, `changeSlide`, etc. These allow cross-file interactions after injection.
+- Modal gallery variables are local to `showPropertyModal` but `closePropertyModal` is exposed for manual closing.
+
+If you want, I can:
+- Add line numbers to each occurrence in the report.
+- Export this report in another format (CSV, JSON).
+
+End of report
+
+
+
+7 . تزبيط a.active الناف بار  "done"
+
+
+
+
+3 . تزبيط ملفات css و js 
+6 . بحث عن شي حطو تحت الية عملنا 
+8 . اذا كنت باي صفحة وكبست على خدماتنا ياخدني عالصفحة الرئيسية بعد ما يبعتلي زر انو هل تريد عدم حفظ والذهاب للصفحة الرئيسية
+9 . شوف اذا في اغلاط بالكود ومسح كلشي مالو طعمة 
+10 . تبديل querySelectorAll ب id واضح اذا احسن 
+11 . اضافة دارك مود
+
+زر اتصال وواتساب بصفحة معاينة العقار بصفحة الاضافة12  "done"
+تصغير حجم معاينة العقار بصفحة عقاراتي 13 "done"
+اضافة زر اضافة عقار في صفحة الطلاب ومناقشة امكانية وضع زر في نهاية الصفحة تاخذني لصفحة العقارات الرئيسية14   
+16 بصفحة عقاراتي تزبيط زر اتصال وواتساب وعند معاينة العقار بعد الاضافة "done"
+wave-separator .shape-fill تغيير لون متل لون الفوتر
+ صفحة مالك العقار الرجوع للرئيسية رفعو لفوق 
+
+
+osamaosamaosamaosama947
+osamaosama.123
+osamakebabi3@gmail.com
+Osama.123
+
+الاجراءات بكون فيها تعديل العقار معاينة العقار وحذف العقار وضيف بصفحة اضافة العقار بيقبل على تقسيم ولا لا بس اذا كان مرتبط بجامعة بيفتح هاد الخيار وبيختار على كم شخص بيقدر يكون بيتقسم
+
+
+
+
+
+        تعديل
+        home
+
+        المنزل المشترك بالعقارات العادية
+        وضع ميزة منزل مشترك بالسكن الطلاب على كرت الخارجي مع وضع نجمة
+        زر بمعاينة الكرت اتصال وواتساب الغاء 
+
+        صفحة المالك
+        الحساب بصفحة المالك  ازالة
+        طلبات التواصل يمين تحت لوحة التحكم 
+        زر عودة ارفعو لفوق
+        مدينة ومحافظة تعديل حذف عرض
+        نوع العقار وازالة مالك العقار 
+        الكرت التالت طلبات تواصل 
+
+        الية عمل طلبات تواصل بتفاصيل العقار  
+        مربع التواصل تحت معاينة العقار بس بيطلب طلب توااصل بيطلع اليرت تم ارسال طلب اذا مسجل دخول
+        بصفحة طلبات التواصل 
+
+          بصفحة الادمن 
+          العقارات المقبولة بيطلع كلشي مقبول 
+          العقارات المنتظرة بيطلع كلشي انتظار بدو موافقة
+          
+          احدث الاجراءات 
+          موافقة العقار 
+          وموافقة الحساب والرفض
+
+
+
+لازم طلبات المراسلة بس بين الزبون والمالك ولا للادمن كمان 
+
+لوحة مالك العقار لازم تكون كلا فاضية لحتى يضيف عقار 
+
+اسمو وايميلو والرسالة المرسلة 
+حذف طلب التوااصل عند الادمن 
+
+
+title: عنوان العقار الظاهر للمستخدم، هنا شقة سكنية قريبة من قدسيا
+city: المحافظة أو المدينة الكبرى، هنا ريف دمشق
+region: المنطقة داخل المحافظة، هنا قدسيا
+property_type: نوع العقار، هنا house يعني منزل/شقة عادية
+rooms: عدد الغرف في العقار، هنا 3
+price_num: السعر كقيمة رقمية للتعامل البرمجي، هنا 90000000
+price: السعر كنص منسق مع وحدة العملة، هنا 90,000,000 ل.س
+images: مصفوفة روابط الصور الخاصة بالعقار، هنا تحتوي على ['photo/5.jpg']
+owner: كائن بيانات المالك ويشمل:
+name: اسم المالك أحمد البستاني
+phone: رقم الهاتف +963-988-123456
+email: البريد الإلكتروني ahmad@example.com
+linkedToUniversity: قيمة منطقية تحدد إن العقار مرتبط بجامعة، هنا true
+university: اسم الجامعة المرتبطة، هنا الكلية المدنية
+studentDiscount: هل يوجد خصم للطلاب، هنا true
+discountPercent: نسبة الخصم الممنوح للطلاب، هنا 15
+division_accept: هل العقار يقبل تقسيم السكن، هنا yes
+division_count: عدد الأشخاص الممكن ان يقسموا العقار، هنا 3
+current_occupants: عدد الأشخاص الموجودين حالياً، هنا 2
+status: حالة العقار، هنا available يعني متوفر
+area: مساحة العقار بالمتر المربع، هنا 160
+description: وصف نصي للعقار، هنا شقة في ضاحية قدسيا.
+divisionLabel
+
+.hamburger , .profile-chip
+
+#f1f1f1ba
+
+function openPropertyDetails(id) {
+    const p = propertiesData.find(x => String(x.id) === String(id));

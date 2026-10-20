@@ -1,0 +1,198 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-primary);
+}
+
+.sidebar-footer p {
+    color:#ccc;
+    font-size:12px;
+    text-align:center;
+}
+
+.topbar-right-box {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.btn-primary {
+    padding: 10px 25px; 
+    background-color: #666666;
+    color: #fff; 
+    text-decoration: none; 
+    border-radius: 5px;
+}
+
+.alert-icon {
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    color: var(--color-primary);
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.alert-text-content strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-dark);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+}
+
+.alert-text-content p {
+    line-height: 1.8;
+    color: var(--text-light);
+    font-size: var(--font-size-md);
+}
+
+.table-panel-header {
+    margin-bottom: 25px;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-left: 8px;
+    white-space: nowrap;
+}
+
+.status-badge.status-pending {
+    background: #fff5e5;
+    color: #ffa502;
+}
+
+.status-badge.status-active {
+    background: #e5f9e5;
+    color: #2ed573;
+}
+
+.status-badge.status-rejected {
+    background: #ffe5e5;
+    color: #ff4d4d;
+}
+
+.prop-table-title {
+    font-weight: 700;
+    color: var(--color-primary);
+    font-size: var(--font-size-md);
+}
+
+.location-text {
+    color: var(--text-light);
+    font-size: var(--font-size-sm);
+}
+
+.location-text i {
+    color: var(--color-gold-light);
+    margin-left: 4px;
+}
+
+.admin-table tbody tr:hover {
+    background: rgba(139, 127, 210, 0.05);
+}
+
+/* ========== أزرار الإجراءات الضخمة والمثالية ========== */
+
+
+.btn-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: none;
+    border-radius: 8px;
+    background-color: #35358b;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.btn-edit:hover {
+    background-color: #35358bba;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.btn-edit:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.btn-delete { background-color: #962826; }
+.btn-delete:hover { background-color: #af3d3a }
+
+.btn-approve { background-color: var(--success); }
+.btn-approve:hover { filter: brightness(0.9); }
+
+.btn-reject { background-color: var(--danger); }
+.btn-reject:hover { background-color: var(--danger-hover); }
+
+.btn-ban { background-color: #e67e22; }
+.btn-ban:hover { background-color: #d35400; }
+
+.btn-view:active, .btn-edit:active, .btn-delete:active, .btn-approve:active, .btn-reject:active, .btn-ban:active {
+    transform: scale(0.96);
+}
+
+.badge {
+    display: flex;
+    background-color: var(--color-primary);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+}
+
+/* التبويبات المخفية والمفعلة */
+.section-panel { display: none; width: 100%; }
+.section-panel.active { display: block; }
+/* التجاوب السحري لشاشات الهواتف المحمولة */
+@media (max-width: 768px) {
+
+    .logout-btn span, .logout-btn text {
+        display: none; 
+    }
+
+    .table-panel {
+        padding: 15px;
+        border-radius: 16px;
+    }
+
+    /* ربط العناوين التلقائية */
+    #users .admin-table td:nth-of-type(1):before { content: "رقم المستخدم:"; }
+    #users .admin-table td:nth-of-type(2):before { content: "اسم المستخدم:"; }
+    #users .admin-table td:nth-of-type(3):before { content: "البريد الإلكتروني:"; }
+    #users .admin-table td:nth-of-type(4):before { content: "رقم الهاتف:"; }
+    #users .admin-table td:nth-of-type(5):before { content: "الحالة:"; }
+    #users .admin-table td:nth-of-type(6):before { content: "الإجراءات:"; }
+
+    #properties .admin-table td:nth-of-type(1):before { content: "العقار:"; }
+    #properties .admin-table td:nth-of-type(2):before { content: "المالك:"; }
+    #properties .admin-table td:nth-of-type(3):before { content: "السعر:"; }
+    #properties .admin-table td:nth-of-type(4):before { content: "الحالة:"; }
+    #properties .admin-table td:nth-of-type(5):before { content: "الإجراءات:"; }
+
+    #messages .admin-table td:nth-of-type(1):before { content: "العقار:"; }
+    #messages .admin-table td:nth-of-type(2):before { content: "مالك العقار:"; }
+    #messages .admin-table td:nth-of-type(3):before { content: "رقم المالك:"; }
+    #messages .admin-table td:nth-of-type(4):before { content: "تاريخ الطلب:"; }
+    #messages .admin-table td:nth-of-type(5):before { content: "حساب الزبون:"; }
+    #messages .admin-table td:nth-of-type(6):before { content: "رقم الزبون:"; }
+    #messages .admin-table td:nth-of-type(7):before { content: "الإجراءات:"; }
+
+}
